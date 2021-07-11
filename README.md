@@ -11,6 +11,7 @@ help
 ----
 
 python frequency_counter.py -h
+
 usage: frequency_counter.py [-h] [--output_name [OUTPUT_NAME]]
                             prep_file inputs_folder
 
@@ -29,9 +30,11 @@ optional arguments:
 sample run:
 ---------
 (without optional parameter --output_name)
+
 python frequency_counter.py Prepositions_list..txt inputs/
 results written to result.xlsx
 
 (with optinoal parameter)
+
 python frequency_counter.py Prepositions_list..txt inputs/ --output_name 'new_result.xlsx'
 results written to new_result.xlsx
