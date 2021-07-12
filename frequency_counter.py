@@ -66,6 +66,3 @@ if __name__ == '__main__':
 		args= parser.parse_args()
 		fc = Frequency_counter(args.prep_file, args.inputs_folder, args.output_name)
 		fc.generate_report()
-
-
-
