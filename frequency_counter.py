@@ -24,8 +24,8 @@ class Frequency_counter(object):
 				raise Exception(f"{preposition_file} file not found")
 			else:
 				with open(self.prep_file, 'r') as f:
-					for line in f.readlines()[3:]: #skip first three lines
-							prep_list.append(line.split('.')[1].strip().lower())
+					for line in f.readlines(): #skip first three lines
+							prep_list.append(line.strip().lower())
 				return prep_list
 		except Exception as e:
 			print(str(e))
