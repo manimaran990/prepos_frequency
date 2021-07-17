@@ -45,7 +45,7 @@ class Frequency_counter(object):
 								#read it as df
 								file_name = os.path.basename(inp_file)
 								tmp_df = pd.read_csv(inp_file)
-								tmp_df.set_index('word', inplace=True)
+								tmp_df = tmp_df.groupby(tmp_df['word'].str.lower()).sum()
 								tmp_df_dict = tmp_df.to_dict()['count']
 								prep_df[file_name] = prep_df.apply(lambda x: tmp_df_dict[x['word']] if x['word'] in tmp_df_dict.keys() else 0, axis=1)
 						
