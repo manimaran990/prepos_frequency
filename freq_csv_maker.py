@@ -34,7 +34,7 @@ if __name__ == '__main__':
 		parser = argparse.ArgumentParser(description='word frequency csv maker')
 		parser.add_argument('input_file', type=str, help='input filename contains list of words')
 		parser.add_argument('--casesensitive', action='store', type=bool, const=True, default=False, nargs='?', help='case sensitive operation ?')
-		parser.add_argument('--output_name', action='store', type=str, default='result.xlsx', nargs='?', help='output filename')
+		parser.add_argument('--output_name', action='store', type=str, default='result.csv', nargs='?', help='output filename')
 
 		args= parser.parse_args()
 		fc = Word_freq_maker(args.input_file, args.casesensitive, args.output_name)
