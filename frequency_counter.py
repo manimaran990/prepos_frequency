@@ -21,7 +21,7 @@ class Frequency_counter(object):
 		try:
 			prep_list = []
 			if not os.path.exists(self.prep_file):
-				raise Exception(f"{preposition_file} file not found")
+				raise Exception(f"{self.prep_file} file not found")
 			else:
 				with open(self.prep_file, 'r', encoding='utf-8-sig') as f:
 					for line in f.readlines(): #skip first three lines
@@ -65,7 +65,7 @@ class Frequency_counter(object):
 									#read it as df
 									with open(inp_file, 'r+') as f:
 										data = mmap.mmap(f.fileno(), 0).read().decode('utf-8') # to read large file
-										data_dict[prep][os.path.basename(inp_file)] = len(regex.findall(prep, data, re.UNICODE))
+										data_dict[prep][os.path.basename(inp_file)] = len(regex.findall(rf'\b{prep}\b', data, re.UNICODE))
 
 						df = pd.DataFrame(data_dict).transpose() #create df and transpose the df
 						prep_df = df[sorted(df.columns)] #sort by columns
