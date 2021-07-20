@@ -4,9 +4,10 @@ import glob
 import os
 import logging
 import argparse
+import re, regex, mmap
 
 #logging config
-logging.basicConfig(filename='error.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename='error.log', filemode='a', format='%(name)s - %(levelname)s - %(message)s')
 
 class Frequency_counter(object):
 	''' class to count the frequency of preposisitions '''
@@ -24,45 +25,80 @@ class Frequency_counter(object):
 			else:
 				with open(self.prep_file, 'r') as f:
 					for line in f.readlines(): #skip first three lines
-							prep_list.append(line.strip().lower())
+							prep_list.append(line.strip())
 				return prep_list
 		except Exception as e:
 			print(str(e))
 			logging.error(str(e))
 
-	def generate_report(self):
+	def csv_for_eachfile(self, data_df, file_list, outputdir):
+		try:
+			for file in file_list:
+				fname = os.path.basename(file)
+				tdf = pd.DataFrame(data_df[fname])
+				tdf.reset_index(inplace=True)
+				tdf.columns = ['word', 'count']
+				tdf.set_index('word', inplace=True)
+				tdf.to_csv(os.path.join(outputdir, fname+".csv"))
+				print(f"{fname}.csv written")
+				logging.info(f"{fname}.csv written")
+		except Exception as e:
+			print(str(e))
+			logging.error(f"error occured {e}")
+
+
+	def generate_report(self, type, outputdir):
 		''' generate report file '''
 		try:
-				#create preposition df
+				#create preposition list
 				prep_list = self.get_prepos_list()
-				prep_df = pd.DataFrame(prep_list, columns=['word'])
+
+				data_dict = {} #data dictionary to hold all the data
 				# read all the csv files from the directory and check for availability
 				if not os.path.isdir(self.inputs_path):
 						raise Exception(f"field is empty or {self.inputs_path} is not a directory")
 				else:
-						csv_inputs = glob.glob(f'{self.inputs_path}/*.csv')
-						for inp_file in csv_inputs:
-								#read it as df
-								file_name = os.path.basename(inp_file)
-								tmp_df = pd.read_csv(inp_file)
-								tmp_df = tmp_df.groupby(tmp_df['word'].str.lower()).sum()
-								tmp_df_dict = tmp_df.to_dict()['count']
-								prep_df[file_name] = prep_df.apply(lambda x: tmp_df_dict[x['word']] if x['word'] in tmp_df_dict.keys() else 0, axis=1)
-						
-						#write to excel file
-						prep_df.set_index('word', inplace=True)
-						prep_df.to_excel(self.output_fname)
+						csv_inputs = glob.glob(f'{self.inputs_path}/*.txt')
+						for prep in prep_list:
+							data_dict[prep] = {} #add dictionary with preposition as key 
+							for inp_file in csv_inputs:
+									#read it as df
+									with open(inp_file, 'r+') as f:
+										data = mmap.mmap(f.fileno(), 0).read().decode('utf-8') # to read large file
+										data_dict[prep][os.path.basename(inp_file)] = len(regex.findall(prep, data, re.UNICODE))
+
+						df = pd.DataFrame(data_dict).transpose() #create df and transpose the df
+						prep_df = df[sorted(df.columns)] #sort by columns
+						print("dataframe created: ")
+						#print(prep_df.head())
+
+						#check whether you want csv for each file or not
+						if outputdir is not None: # if it's not none
+							#if output directory not found create one
+							if not os.path.exists(outputdir):
+								print(f"creating directory {outputdir}")
+								os.mkdir(outputdir)
+							self.csv_for_eachfile(prep_df, csv_inputs, outputdir)
+
+						#write consolidated report
+						if type == 'xlsx':
+							prep_df.to_excel(self.output_fname)
+						else: # if it is csv
+							self.output_fname = 'result.csv' if self.output_fname == 'result.xlsx' else self.output_fname
+							prep_df.to_csv(self.output_fname)
 						print(f"results written to {self.output_fname}")
 		except Exception as e:
 				print(str(e))
-				logging.error(f"exception in {file_name}: exception {e}")
+				logging.error(f"{e}")
 
 if __name__ == '__main__':
 		parser = argparse.ArgumentParser(description='preposition frequency counter')
 		parser.add_argument('prep_file', type=str, help='preposition filename')
 		parser.add_argument('inputs_folder', type=str, help='folder contains csv files to read')
+		parser.add_argument('--output_type', type=str, choices=['xlsx', 'csv'], default='xlsx', help="outpufile file type")
 		parser.add_argument('--output_name', action='store', type=str, default='result.xlsx', nargs='?', help='output filename')
+		parser.add_argument('--output_dir', action='store', type=str, help="make seperate csv files for each input")
 
 		args= parser.parse_args()
 		fc = Frequency_counter(args.prep_file, args.inputs_folder, args.output_name)
-		fc.generate_report()
+		fc.generate_report(args.output_type, args.output_dir)

@@ -9,10 +9,10 @@ pip3 install -r requirements.txt
 
 help
 ----
-
-python frequency_counter.py -h
-
-usage: frequency_counter.py [-h] [--output_name [OUTPUT_NAME]]
+~/prepos_frequency$ python frequency_counter.py -h
+usage: frequency_counter.py [-h] [--output_type {xlsx,csv}]
+                            [--output_name [OUTPUT_NAME]]
+                            [--output_dir OUTPUT_DIR]
                             prep_file inputs_folder
 
 preposition frequency counter
@@ -23,89 +23,62 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  --output_type {xlsx,csv}
+                        outpufile file type
   --output_name [OUTPUT_NAME]
                         output filename
+  --output_dir OUTPUT_DIR
+                        make seperate csv files for each input
 
 
-sample run:
----------
-(without optional parameter --output_name)
+sample run
+------
 
-python frequency_counter.py Prepositions_list..txt inputs/
+with default parameters:
+-----------
+
+~/prepos_frequency$ python frequency_counter.py Prepositions_list..txt originaltextfile/
+dataframe created:
 results written to result.xlsx
 
-(with optinoal parameter)
+to get the consolidated output as csv:
+----------
 
-python frequency_counter.py Prepositions_list..txt inputs/ --output_name 'new_result.xlsx'
-results written to new_result.xlsx
+~/prepos_frequency$ python frequency_counter.py Prepositions_list..txt originaltextfile/ --output_type csv --output_name 'consolidate_result.csv'
+dataframe created:
+results written to consolidate_result.csv
+~/prepos_frequency$ head -5 consolidate_result.csv
+,1.1.pdf.txt,1.2.pdf.txt,10_1.pdf.txt,10_2.pdf.txt,2.1.pdf.txt,2.2.pdf.txt,3.1.pdf.txt,3.2.pdf.txt,4.1.pdf.txt,4.2.pdf.txt,5.1.pdf.txt,5.2.pdf.txt,6.1.pdf.txt,6.2.pdf.txt,7.1.pdf.txt,7.2.pdf.txt,8_1.pdf.txt,8_2.pdf.txt,9_1.pdf.txt,9_2.pdf.txt,English_plus_1.pdf.txt,plus_2_english.pdf.txt
+﻿about,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+above,0,0,15,5,3,1,3,3,1,4,8,3,3,3,14,10,10,7,9,11,23,13
+according to,0,0,3,1,0,0,0,0,0,0,0,0,3,2,1,0,4,1,1,2,5,4
+across,0,0,4,3,1,0,4,0,1,1,3,5,4,1,5,5,6,2,4,5,9,11 
 
+to get seperate csv files for each input file (just add --output_dir parameter)
+-----------
 
-
-word frequency csv maker
-========================
-
-
-~/prepos_frequency$ python freq_csv_maker.py -h
-usage: freq_csv_maker.py [-h] [--casesensitive [CASESENSITIVE]]
-                         [--output_name [OUTPUT_NAME]]
-                         input_file
-
-word frequency csv maker
-
-positional arguments:
-  input_file            input filename contains list of words
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --casesensitive [CASESENSITIVE]
-                        case sensitive operation ?
-  --output_name [OUTPUT_NAME]
-                        output filename
-
-
-usage:
-======
-for case-insensitive opeartion:
----------------------------- 
-~/prepos_frequency$ python freq_csv_maker.py ambe1.txt --output_name 'no_case_sensitive.txt'
-csv file generated! no_case_sensitive.txt
-
-~/prepos_frequency$ grep -E '^kuru,' no_case_sensitive.txt
-kuru,4
-
-for case-sensitive opeartion: (just add --casesenstive switch in the argument)
-----------------------------
-
-~/prepos_frequency$ python freq_csv_maker.py ambe1.txt --casesensitive --output_name 'case_sensitive.txt'
-csv file generated! case_sensitive.txt
-
-~/prepos_frequency$ grep -iE '^kuru' case_sensitive.txt
-kUrU,1
-kUrUnYis,1
-kUrUnYisutanY,1
-kUrUvukku,1
-kUrUvukkuk,1
-kUru,1
-kUrufkalY,1
-kUruvil,1
-kurU,1
-kurUp,1
-kurUppAka,1
-kurUs,1
-kurUt,1
-kurUyis,1
-kuru,1
-kurukkalY,1
-kurumArkalY,1
-kurup,1
-kuruvikUttE,1
-
-
-count test:
-=======
-~/prepos_frequency$ wc -l ambe1.txt
-32302 ambe1.txt
-~/prepos_frequency$ wc -l case_sensitive.txt
-32303 case_sensitive.txt
-~/prepos_frequency$ wc -l no_case_sensitive.txt
-31802 no_case_sensitive.txt
+~/prepos_frequency$ python frequency_counter.py Prepositions_list..txt originaltextfile/ --output_type csv --output_name 'consolidate_result.csv' --output_dir outputs/
+dataframe created:
+1.1.pdf.txt.csv written
+1.2.pdf.txt.csv written
+10_1.pdf.txt.csv written
+10_2.pdf.txt.csv written
+2.1.pdf.txt.csv written
+2.2.pdf.txt.csv written
+3.1.pdf.txt.csv written
+3.2.pdf.txt.csv written
+4.1.pdf.txt.csv written
+4.2.pdf.txt.csv written
+5.1.pdf.txt.csv written
+5.2.pdf.txt.csv written
+6.1.pdf.txt.csv written
+6.2.pdf.txt.csv written
+7.1.pdf.txt.csv written
+7.2.pdf.txt.csv written
+8_1.pdf.txt.csv written
+8_2.pdf.txt.csv written
+9_1.pdf.txt.csv written
+9_2.pdf.txt.csv written
+English_plus_1.pdf.txt.csv written
+plus_2_english.pdf.txt.csv written
+results written to consolidate_result.csv
