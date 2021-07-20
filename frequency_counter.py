@@ -23,7 +23,7 @@ class Frequency_counter(object):
 			if not os.path.exists(self.prep_file):
 				raise Exception(f"{preposition_file} file not found")
 			else:
-				with open(self.prep_file, 'r') as f:
+				with open(self.prep_file, 'r', encoding='utf-8-sig') as f:
 					for line in f.readlines(): #skip first three lines
 							prep_list.append(line.strip())
 				return prep_list
@@ -70,7 +70,7 @@ class Frequency_counter(object):
 						df = pd.DataFrame(data_dict).transpose() #create df and transpose the df
 						prep_df = df[sorted(df.columns)] #sort by columns
 						print("dataframe created: ")
-						#print(prep_df.head())
+						print(prep_df.head())
 
 						#check whether you want csv for each file or not
 						if outputdir is not None: # if it's not none
